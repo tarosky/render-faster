@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+</head>
+<body>
+<p>
+	<!-- no lazy. -->
+	<img src="https://via.placeholder.com/150" alt="" width="150" height="150" />
+</p>
+
+<p>
+	<!-- should skip. -->
+	<img class="skip" src="https://via.placeholder.com/150" alt="" width="150" height="150" />
+</p>
+
+<p>
+	<!-- already lazy. -->
+	<img src="https://via.placeholder.com/150" loading="lazy" alt="" width="150" height="150" />
+</p>
+
+<p>
+	<!-- Eager. -->
+	<img src="https://via.placeholder.com/150" loading="eager" alt="" width="150" height="150" />
+</p>
+
+<p>
+	<!-- class eager. -->
+	<img class="post-thumbnail" src="https://via.placeholder.com/150" alt="" width="150" height="150" />
+</p>
+
+<p>
+	<!-- class eager with lazy. -->
+	<img class="post-thumbnail" loading="lazy" src="https://via.placeholder.com/150" alt="" width="150" height="150" />
+</p>
+
+</body>
+</html>

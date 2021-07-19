@@ -4,6 +4,7 @@ namespace Tarosky\RenderFaster\Ui;
 
 use Tarosky\RenderFaster\Pattern\Singleton;
 use Tarosky\RenderFaster\Services\LazyLoader;
+use Tarosky\RenderFaster\Services\ScriptLoader;
 
 /**
  * Setting screen.
@@ -19,6 +20,7 @@ class Settings extends Singleton {
 		add_action( 'admin_init', [ $this, 'register_settings' ] );
 		add_action( 'admin_menu', [ $this, 'admin_menu' ] );
 		add_action( 'template_redirect', [ $this, 'filter_image' ] );
+		add_action( 'template_redirect', [ $this, 'filter_js_list' ] );
 	}
 
 	/**
@@ -88,7 +90,58 @@ class Settings extends Singleton {
 				}
 			}
 		}
-
+		// JavaScripts.
+		$script_loader = ScriptLoader::get_instance();
+		add_settings_section( 'render_faster_js_section', 'JavaScript', function() {
+			printf(
+				'<p class="description">%s e.g. <code>%s</code></p>',
+				esc_html__( 'Optimize script loading with defer or async. This may break your site, so please consider using allow/deny list.', 'render-faster' ),
+				esc_html( '<script scr="/path/to/js" defer></script>' )
+			);
+		}, 'render-faster' );
+		foreach ( [
+			[ 'jquery_migrate', __( 'Remove jQuery Migrate', 'render-faster' ), __( 'jQuery migrate is a helper for backward compatibility. If your site and all codes are well up-to-date, you can remove it.', 'render-faster' ) ],
+			[ 'jquery_footer', __( 'Move jQuery to Footer', 'render-faster' ), __( 'jQuery is output inside head tag by default. You can move it to footer.', 'render-faster' ) ],
+			[ 'defer', 'Defer', __( 'Add defer attribute to script tag. This will make JavaScript non-blocking. If no allow & deny list is defined, all scripts will be deferred.', 'render-faster' ) ],
+			[ 'async', 'Async', __( 'If defer option is enabled and the script is depending no other script, add async attributes in place of defer.', 'render-faster' ) ],
+		] as list( $key, $label, $desc ) ) {
+			$option_name = $script_loader->get_feature_option_key( $key );
+			$is_active   = $script_loader->is_feature_active( $key );
+			add_settings_field( $option_name, $label, function() use( $option_name, $is_active, $desc ) {
+				foreach ( [
+					'1' => __( 'Enabled', 'render-faster' ),
+					''  => __( 'Disabled', 'render-faster' ),
+				] as $val => $option_label ) {
+					printf(
+						'<p><label><input type="radio" name="%s" value="%s" %s/> %s</label></p>',
+						esc_attr( $option_name ),
+						esc_attr( $val ),
+						checked( $val, $is_active, false ),
+						esc_html( $option_label )
+					);
+				}
+				printf( '<p class="description">%s</p>', esc_html( $desc ) );
+			}, 'render-faster', 'render_faster_js_section' );
+			register_setting( 'render-faster', $option_name );
+			// If defer, add allow list.
+			if ( 'defer' === $key ) {
+				foreach ( [
+					[ 'render_faster_js_allow_list', __( 'Allow defer', 'render-faster' ), __( 'Enter handle name in CSV format. These JS are allowed to be deferred.', 'render-faster' ) ],
+					[ 'render_faster_js_deny_list', __( 'Deny defer', 'render-faster' ), __( 'Enter handle name in CSV format. Deny list for script defer.', 'render-faster' ) ],
+				] as list( $extra_key, $extra_label, $extra_desc ) ) {
+					add_settings_field( $extra_key, $extra_label, function() use ( $extra_key, $extra_desc ) {
+						printf(
+							'<input type="text" class="regular-text" name="%s" value="%s" placeholder="%s" /><p class="description">%s</p>',
+							esc_attr( $extra_key ),
+							get_option( $extra_key ),
+							'e.g. my-plugin-script,jetpack-slider',
+							esc_html( $extra_desc )
+						);
+					}, 'render-faster', 'render_faster_js_section' );
+					register_setting( 'render-faster', $extra_key );
+				}
+			}
+		}
 	}
 
 	/**
@@ -127,5 +180,18 @@ class Settings extends Singleton {
 		add_filter( 'render_faster_image_should_not', function() {
 			return array_values( array_filter( array_map( 'trim', explode( ',', get_option( 'render_faster_image_should_not', '' ) ) ) ) );
 		} );
+	}
+
+	/**
+	 * Filter JS allow&deny list.
+	 */
+	public function filter_js_list() {
+		foreach ( [ 'allow', 'deny' ] as $key ) {
+			add_filter( 'render_faster_js_' . $key . '_list', function( $list ) use ( $key ) {
+				$option = array_filter( array_map( 'trim', explode( ',', get_option( "render_faster_js_{$key}_list", '' ) ) ) );
+				return array_values( array_filter( array_merge( $list, $option ) ) );
+			} );
+
+		}
 	}
 }

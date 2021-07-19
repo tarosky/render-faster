@@ -75,4 +75,16 @@ abstract class Service extends Singleton {
 		}
 		return (bool) apply_filters( $option_name . '_is_active', $is_active );
 	}
+
+	/**
+	 * Whether if this is public area.
+	 *
+	 * @param string $context Context of "public"
+	 * @return bool
+	 */
+	public function is_public( $context = '' ) {
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$is_public = ! is_admin() && ! ( isset( $_SERVER[ 'SCRIPT_FILENAME' ] ) && 'wp-login.php' === basename( $_SERVER[ 'SCRIPT_FILENAME' ] ) );
+		return (bool) apply_filters( 'render_fast_is_public', $is_public, $context );
+	}
 }

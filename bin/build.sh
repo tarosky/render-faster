@@ -6,7 +6,7 @@ set -e
 PREFIX="refs/tags/"
 VERSION=${1#"$PREFIX"}
 
-echo "Building Taro iframe Block v${VERSION}..."
+echo "Building Render Faster v${VERSION}..."
 
 # Install NPM.
 npm install

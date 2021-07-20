@@ -5,6 +5,7 @@ namespace Tarosky\RenderFaster\Ui;
 use Tarosky\RenderFaster\Pattern\Singleton;
 use Tarosky\RenderFaster\Services\LazyLoader;
 use Tarosky\RenderFaster\Services\ScriptLoader;
+use Tarosky\RenderFaster\Services\StyleLoader;
 
 /**
  * Setting screen.
@@ -21,6 +22,7 @@ class Settings extends Singleton {
 		add_action( 'admin_menu', [ $this, 'admin_menu' ] );
 		add_action( 'template_redirect', [ $this, 'filter_image' ] );
 		add_action( 'template_redirect', [ $this, 'filter_js_list' ] );
+		add_action( 'template_redirect', [ $this, 'filter_css_list' ] );
 	}
 
 	/**
@@ -142,6 +144,51 @@ class Settings extends Singleton {
 				}
 			}
 		}
+		// Style tag.
+		$style_loader = StyleLoader::get_instance();
+		add_settings_section( 'render_faster_css_section', 'CSS', function() {
+			printf(
+				'<p class="description">%s</p>',
+				esc_html__( 'Add preload resource hint to link(rel=stylesheet) tag. This will optimize rendering speed by prioritize css loading.', 'render-faster' )
+			);
+		}, 'render-faster' );
+		foreach ( [
+			'preload' => __( 'Preload', 'render-faster' ),
+			'preload_polyfill' => __( 'Polyfill for Preload', 'render-faster' ),
+		] as $feature => $label ) {
+			$option_key = $style_loader->get_feature_option_key( $feature );
+			$is_active  = $style_loader->is_feature_active( $feature );
+			add_settings_field( $option_key, $label, function() use ( $option_key, $is_active ) {
+				foreach ( [
+					'1' => __( 'Enabled', 'render-faster' ),
+					''  => __( 'Disabled', 'render-faster' ),
+				] as $val => $option_label ) {
+					printf(
+						'<p><label><input type="radio" name="%s" value="%s" %s/> %s</label></p>',
+						esc_attr( $option_key),
+						esc_attr( $val ),
+						checked( $val, $is_active, false ),
+						esc_html( $option_label )
+					);
+				}
+			}, 'render-faster', 'render_faster_css_section' );
+			register_setting( 'render-faster', $option_key );
+			// Deny list
+			if ( 'preload' === $feature ) {
+				$ext_option_name = 'render_faster_preload_deny_list';
+				add_settings_field( $ext_option_name, __( 'Deny List', 'render-faster' ), function() use ( $ext_option_name ) {
+					$value =
+					printf(
+						'<input class="regular-text" type="text" name="%s" value="%s" placeholder="%s" /><p class="description">%s</p>',
+						esc_attr( $ext_option_name ),
+						esc_attr( get_option( $ext_option_name ) ),
+						esc_attr( 'e.g. my-theme-style, bootstrap' ),
+						__( 'To avoid FOUC, add handle names of critical CSS in CSV format. They are generally your theme\'s CSS.', 'render-faster' )
+					);
+				}, 'render-faster', 'render_faster_css_section' );
+				register_setting( 'render-faster', $ext_option_name );
+			}
+		}
 	}
 
 	/**
@@ -175,10 +222,10 @@ class Settings extends Singleton {
 	 */
 	public function filter_image() {
 		add_filter( 'render_faster_image_eager_keys', function() {
-			return array_values( array_filter( array_map( 'trim', explode( ',', get_option( 'render_faster_image_eager_keys', '' ) ) ) ) );
+			return $this->convert_csv( get_option( 'render_faster_image_eager_keys', '' ) );
 		} );
 		add_filter( 'render_faster_image_should_not', function() {
-			return array_values( array_filter( array_map( 'trim', explode( ',', get_option( 'render_faster_image_should_not', '' ) ) ) ) );
+			return $this->convert_csv( get_option( 'render_faster_image_should_not', '' ) );
 		} );
 	}
 
@@ -188,10 +235,30 @@ class Settings extends Singleton {
 	public function filter_js_list() {
 		foreach ( [ 'allow', 'deny' ] as $key ) {
 			add_filter( 'render_faster_js_' . $key . '_list', function( $list ) use ( $key ) {
-				$option = array_filter( array_map( 'trim', explode( ',', get_option( "render_faster_js_{$key}_list", '' ) ) ) );
+				$option = $this->convert_csv( get_option( "render_faster_js_{$key}_list", '' ) );
 				return array_values( array_filter( array_merge( $list, $option ) ) );
 			} );
 
 		}
+	}
+
+	/**
+	 * Filter CSS deny list.
+	 */
+	public function filter_css_list() {
+		add_filter( 'render_faster_css_deny_list', function( $list ) {
+			$option = $this->convert_csv( get_option( 'render_faster_preload_deny_list', '' ) );
+			return array_values( array_filter( array_merge( $list, $option ) ) );
+		} );
+	}
+
+	/**
+	 * Convert CSV string to array.
+	 *
+	 * @param string $csv CSV string.
+	 * @return string[]
+	 */
+	protected function convert_csv( $csv ) {
+		return array_values( array_filter( array_map( 'trim', explode( ',', $csv ) ) ) );
 	}
 }

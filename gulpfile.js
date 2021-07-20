@@ -4,6 +4,7 @@ const $ = require( 'gulp-load-plugins' )();
 const webpack = require( 'webpack-stream' );
 const webpackBundle = require( 'webpack' );
 const named = require( 'vinyl-named' );
+const mergeStream = require( 'merge-stream' );
 
 let plumber = true;
 
@@ -76,6 +77,14 @@ gulp.task( 'eslint', function () {
 		.pipe( $.eslint.format() );
 } );
 
+// Copy bundles.
+gulp.task( 'copy', () => {
+	return mergeStream(
+		gulp.src( 'node_modules/fg-loadcss/dist/cssrelpreload.min.js' )
+			.pipe( gulp.dest( 'dist/vendor/loadcss' ) )
+	);
+} );
+
 // watch
 gulp.task( 'watch', function () {
 	// Make SASS
@@ -91,7 +100,7 @@ gulp.task( 'noplumber', ( done ) => {
 } );
 
 // Build
-gulp.task( 'build', gulp.parallel( 'jsx', 'sass' ) );
+gulp.task( 'build', gulp.parallel( 'jsx', 'sass', 'copy' ) );
 
 // Default Tasks
 gulp.task( 'default', gulp.series( 'watch' ) );

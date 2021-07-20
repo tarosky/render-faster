@@ -5,6 +5,11 @@ namespace Tarosky\RenderFaster\Services;
 
 use Tarosky\RenderFaster\Pattern\Service;
 
+/**
+ * Style loader.
+ *
+ * @package render-faster
+ */
 class StyleLoader extends Service {
 
 	/**

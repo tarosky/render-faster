@@ -8,6 +8,9 @@ VERSION=${1#"$PREFIX"}
 
 echo "Building Render Faster v${VERSION}..."
 
+# Install composer.
+composer install --no-dev --prefer-dist
+
 # Install NPM.
 npm install
 npm run package

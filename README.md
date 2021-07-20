@@ -13,10 +13,7 @@ Render the page faster. Enhance your site's load page for Core Web Vital.
 
 ## Description
 
-Add iframe block for block editor.
-WordPress editor sometimes clean up <code>iframe</code> tag if the user is an contributor(single site) or an editor(multi site) who has no capability [unfiltered_html](https://wordpress.org/support/article/roles-and-capabilities/#unfiltered_html).
-
-This plugin simply add 1 custom block **iframe block**. That's all and no config.
+This plugin optimize 
 
 ### Features
 

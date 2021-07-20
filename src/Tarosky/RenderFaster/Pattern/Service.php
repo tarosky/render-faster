@@ -67,7 +67,7 @@ abstract class Service extends Singleton {
 			return false;
 		}
 		$option_name = $this->get_feature_option_key( $feature );
-		$is_active = $this->get_option( $feature );
+		$is_active   = $this->get_option( $feature );
 		// If constant is defined, it overrides
 		$constant = $this->get_defined_value( $feature );
 		if ( ! is_null( $constant ) ) {
@@ -84,7 +84,7 @@ abstract class Service extends Singleton {
 	 */
 	public function is_public( $context = '' ) {
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		$is_public = ! is_admin() && ! ( isset( $_SERVER[ 'SCRIPT_FILENAME' ] ) && 'wp-login.php' === basename( $_SERVER[ 'SCRIPT_FILENAME' ] ) );
+		$is_public = ! is_admin() && ! ( isset( $_SERVER['SCRIPT_FILENAME'] ) && 'wp-login.php' === basename( $_SERVER['SCRIPT_FILENAME'] ) );
 		return (bool) apply_filters( 'render_fast_is_public', $is_public, $context );
 	}
 }

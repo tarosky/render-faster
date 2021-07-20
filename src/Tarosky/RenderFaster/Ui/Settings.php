@@ -56,8 +56,8 @@ class Settings extends Singleton {
 					?>
 					<p>
 						<label>
-							<input type="radio" name="<?php echo esc_attr( $option_name ); ?>" value="<?php echo esc_attr( $value ) ?>" <?php checked( $bool, $is_active ) ?> />
-							<?php echo esc_html( $label ) ?>
+							<input type="radio" name="<?php echo esc_attr( $option_name ); ?>" value="<?php echo esc_attr( $value ); ?>" <?php checked( $bool, $is_active ); ?> />
+							<?php echo esc_html( $label ); ?>
 						</label>
 					</p>
 					<?php
@@ -109,7 +109,7 @@ class Settings extends Singleton {
 		] as list( $key, $label, $desc ) ) {
 			$option_name = $script_loader->get_feature_option_key( $key );
 			$is_active   = $script_loader->is_feature_active( $key );
-			add_settings_field( $option_name, $label, function() use( $option_name, $is_active, $desc ) {
+			add_settings_field( $option_name, $label, function() use ( $option_name, $is_active, $desc ) {
 				foreach ( [
 					'1' => __( 'Enabled', 'render-faster' ),
 					''  => __( 'Disabled', 'render-faster' ),
@@ -153,7 +153,7 @@ class Settings extends Singleton {
 			);
 		}, 'render-faster' );
 		foreach ( [
-			'preload' => __( 'Preload', 'render-faster' ),
+			'preload'          => __( 'Preload', 'render-faster' ),
 			'preload_polyfill' => __( 'Polyfill for Preload', 'render-faster' ),
 		] as $feature => $label ) {
 			$option_key = $style_loader->get_feature_option_key( $feature );
@@ -165,7 +165,7 @@ class Settings extends Singleton {
 				] as $val => $option_label ) {
 					printf(
 						'<p><label><input type="radio" name="%s" value="%s" %s/> %s</label></p>',
-						esc_attr( $option_key),
+						esc_attr( $option_key ),
 						esc_attr( $val ),
 						checked( $val, $is_active, false ),
 						esc_html( $option_label )
@@ -205,7 +205,7 @@ class Settings extends Singleton {
 	public function render_setting() {
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'Rendering Optimization', 'render-faster' ) ?></h1>
+			<h1><?php esc_html_e( 'Rendering Optimization', 'render-faster' ); ?></h1>
 			<form method="post" action="<?php echo esc_url( admin_url( 'options.php' ) ); ?>">
 				<?php
 				settings_fields( 'render-faster' );

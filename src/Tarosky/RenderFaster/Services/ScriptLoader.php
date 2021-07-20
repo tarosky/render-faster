@@ -50,7 +50,7 @@ class ScriptLoader extends Service {
 		}
 		// Save current version.
 		global $wp_scripts;
-		$jquery     = $wp_scripts->registered[ 'jquery-core' ];
+		$jquery     = $wp_scripts->registered['jquery-core'];
 		$jquery_ver = $jquery->ver;
 		$jquery_src = $jquery->src;
 		// Flag.
@@ -132,7 +132,7 @@ class ScriptLoader extends Service {
 			} elseif ( false !== strpos( $src, get_theme_root_uri() ) ) {
 				// In theme root.
 				// W.I.P
-			} elseif ( false !== strpos( $src, network_home_url() )  ) {
+			} elseif ( false !== strpos( $src, network_home_url() ) ) {
 				// Other, maybe core.
 				// W.I.P
 			} else {

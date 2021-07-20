@@ -97,7 +97,7 @@ class LazyLoader extends Service {
 					}
 				}
 				$attr = sprintf( ' loading="%s"%s', esc_attr( $loading ), $attr );
-			} else if ( preg_match( '#loading=#u', $attr ) ) {
+			} elseif ( preg_match( '#loading=#u', $attr ) ) {
 				// Skip eager images like cover image.
 				foreach ( $eagers as $eager ) {
 					if ( false !== strpos( $attr, $eager ) ) {

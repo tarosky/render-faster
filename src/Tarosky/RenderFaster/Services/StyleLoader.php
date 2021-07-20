@@ -12,7 +12,7 @@ class StyleLoader extends Service {
 	 */
 	public function features() {
 		return [
-			'preload' => false,
+			'preload'          => false,
 			'preload_polyfill' => true,
 		];
 	}

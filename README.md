@@ -20,6 +20,7 @@ This plugin optimize page rendering of WordPress theme.
 - Add `loading="lazy"` or `loading="eager"` with your images.
 - Add `defer` or `async` attributes to your scripts.
 - Add `rel="preload"` to your stylesheets. Polyfill for old browsers is also available.
+- Remove default script helper of embeds(twitter, instagram) and load one after user interaction.
 
 All of above are selectable and you can customize with white list.
 
@@ -74,6 +75,10 @@ Please create new ticket on support forum.
 Create a new [issue](https://github.com/tarosky/render-faster/issues) or send [pull requests](https://github.com/tarosky/render-faster/pulls).
 
 ## Changelog
+
+### 1.1.0
+
+* Support embed optimization.
 
 ### 1.0.0
 

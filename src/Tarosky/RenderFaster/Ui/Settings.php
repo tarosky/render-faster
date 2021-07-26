@@ -6,6 +6,7 @@ use Tarosky\RenderFaster\Pattern\Singleton;
 use Tarosky\RenderFaster\Services\LazyLoader;
 use Tarosky\RenderFaster\Services\ScriptLoader;
 use Tarosky\RenderFaster\Services\StyleLoader;
+use Tarosky\RenderFaster\Services\ThirdParties;
 
 /**
  * Setting screen.
@@ -188,6 +189,38 @@ class Settings extends Singleton {
 				}, 'render-faster', 'render_faster_css_section' );
 				register_setting( 'render-faster', $ext_option_name );
 			}
+		}
+		// 3rd party tags.
+		$third_parties = ThirdParties::get_instance();
+		add_settings_section( 'render_faster_3rd_party_section', __( '3rd Parties', 'render-faster' ), function() {
+			printf(
+				'<p class="description">%s</p>',
+				esc_html__( 'Optimize third partie\'s library like twitter embeds.', 'render-faster' )
+			);
+		}, 'render-faster' );
+		foreach ( [
+			[ 'embeds', __( 'Embed Scripts', 'render-faster' ), __( 'Optimize loading of helper scripts in embedded contents. Currently, twitter and instagram are supported. ', 'render-faster' ) ],
+		] as list( $feature, $label, $desc ) ) {
+			$option_key = $third_parties->get_feature_option_key( $feature );
+			$is_active  = $third_parties->is_feature_active( $feature );
+			add_settings_field( $option_key, $label, function() use ( $option_key, $is_active, $desc ) {
+				foreach ( [
+					'1' => __( 'Enabled', 'render-faster' ),
+					''  => __( 'Disabled', 'render-faster' ),
+				] as $val => $option_label ) {
+					printf(
+						'<p><label><input type="radio" name="%s" value="%s" %s/> %s</label></p>',
+						esc_attr( $option_key ),
+						esc_attr( $val ),
+						checked( $val, $is_active, false ),
+						esc_html( $option_label )
+					);
+				}
+				if ( $desc ) {
+					printf( '<p class="description">%s</p>', esc_html( $desc ) );
+				}
+			}, 'render-faster', 'render_faster_3rd_party_section' );
+			register_setting( 'render-faster', $option_key );
 		}
 	}
 

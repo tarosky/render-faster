@@ -2,7 +2,7 @@
 /**
 Plugin Name: Render Faster
 Plugin URI: https://wordpress.org/plugins/render-faster/
-Description:
+Description: Render your page faster.
 Author: Tarosky INC.
 Version: nightly
 Author URI: https://tarosky.co.jp/

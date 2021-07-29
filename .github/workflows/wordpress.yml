@@ -70,36 +70,9 @@ jobs:
       - name: Check JS & CSS syntax
         run: npm run lint
 
-  pre_release:
-    name: Create Release
-    needs: [ test, assets ]
-    if: contains(github.ref, 'tags/')
-    runs-on: ubuntu-18.04
-    outputs:
-      upload_url: ${{ steps.export.outputs.upload_url }}
-    steps:
-      - uses: actions/checkout@master
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release Render Faster ${{ github.ref }}
-          body: |
-            Release Render FAster version ${{ github.ref }}.
-          draft: false
-          prerelease: false
-
-      - name: Export Upload URL
-        id: export
-        run: echo "::set-output name=upload_url::${{ steps.create_release.outputs.upload_url }}"
-
   release:
     name: Deploy GitHub Release
-    needs: pre_release
+    needs: [ test, assets ]
     if: contains(github.ref, 'tags/')
     runs-on: ubuntu-18.04
     steps:
@@ -121,19 +94,32 @@ jobs:
       - name: Build package.
         run: bash bin/build.sh ${{ github.ref }}
 
-      - name: Cleanup package.
-        run: bash bin/clean.sh
+      - name: WordPress Plugin Deploy
+        id: deploy
+        uses: 10up/action-wordpress-plugin-deploy@stable
+        with:
+          generate-zip: true
+        env:
+          SVN_USERNAME: ${{ secrets.WP_ORG_USERNAME_TAROSKY }}
+          SVN_PASSWORD: ${{ secrets.WP_ORG_PASSWORD_TAROSKY }}
 
-      - name: Create Zip
-        run: zip -r render-faster.zip ./
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
 
-      - name: Upload Release Zip
-        id: upload-release-asset
+      - name: Upload release asset
         uses: actions/upload-release-asset@v1.0.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.pre_release.outputs.upload_url }}
-          asset_path: ./render-faster.zip
-          asset_name: render-faster.zip
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}/${{ github.event.repository.name }}.zip
+          asset_name: ${{ github.event.repository.name }}.zip
           asset_content_type: application/zip

@@ -28,3 +28,8 @@ function render_faster_init() {
 	}
 }
 add_action( 'plugin_loaded', 'render_faster_init' );
+
+/**
+ * Always separate block assets.
+ */
+add_filter( 'should_load_separate_core_block_assets', '__return_true' );

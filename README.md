@@ -36,10 +36,10 @@ Defering JavaScripts sometimes breaks your site.
 For example, if a script requires just in time operation with inline script tag, it will fail.
 
 ```
-<script id="some-script-js" src="somescript.js" defer></script>
-<script>
+&lt;script id="some-script-js" src="somescript.js" defer&gt;&lt;/script&gt;
+&lt;script&gt;
 new SomeScript();
-</script>
+&lt;/script&gt;
 ```
 
 To avoid this, Add `some-script` handle name in **Deny Defer** section in your setting screen.
@@ -50,7 +50,7 @@ To optimize JavaScript loading, try and error approaches works fine.
 
 ### Case 3. Critical Stylesheet
 
-`rel="preload` attributes makes your stylesheets loaded asynchrounsely, but FOUC(Flush of Unstyled Content) happens.
+`rel="preload"` attributes makes your stylesheets loaded asynchrounsely, but FOUC(Flush of Unstyled Content) happens.
 
 To avoid this, include critical CSS to **Deny List** in your setting screen. Critical CSS are generally your theme's main stylesheet.
 
@@ -75,6 +75,10 @@ Please create new ticket on support forum.
 Create a new [issue](https://github.com/tarosky/render-faster/issues) or send [pull requests](https://github.com/tarosky/render-faster/pulls).
 
 ## Changelog
+
+### 1.2.0
+
+* Support separate loading of block styles. Available on WP 5.8 and later.
 
 ### 1.1.0
 

@@ -65,7 +65,7 @@ jobs:
           node-version: '12'
 
       - name: Install NPM Packages
-        run: npm install
+        run: npm ci --ignore-scripts
 
       - name: Check JS & CSS syntax
         run: npm run lint

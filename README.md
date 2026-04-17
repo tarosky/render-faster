@@ -11,6 +11,27 @@ License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
 Render the page faster. Enhance your site's load page for Core Web Vital.
 
+## Deprecation Notice
+
+**This plugin is no longer maintained and will be closed on WordPress.org.**
+
+When Render Faster was first released (2021), it provided features that were missing from WordPress core. Since then, WordPress has absorbed most of those optimizations natively, which means this plugin is no longer necessary on modern WordPress sites (6.3+).
+
+If you are currently using Render Faster, please deactivate and remove it, and use the replacements described below.
+
+### Migration Guide
+
+| Feature of Render Faster | Replacement | Available since |
+|---|---|---|
+| `loading="lazy"` on `<img>` | WordPress core (automatic) | WP 5.5 |
+| `loading="lazy"` on `<iframe>` | WordPress core (automatic) | WP 5.7 |
+| `fetchpriority="high"` / eager loading for the LCP image | WordPress core (automatic) | WP 6.3 |
+| `defer` / `async` on scripts | Script Loading Strategies API — pass `strategy` to `wp_enqueue_script()` / `wp_register_script()` | WP 6.3 |
+| Loading only the block styles used on the page | `should_load_separate_core_block_assets` filter, or `wp_enqueue_block_style()` | WP 5.8 |
+| Removing `jquery-migrate` | A small custom snippet, or a dedicated plugin such as _Disable jQuery Migrate_ | — |
+| Preloading stylesheets (`rel="preload"`) and the `loadCSS` polyfill | Not recommended on modern browsers. Consider Critical CSS tooling or a full-featured performance plugin (WP Rocket, NitroPack, FlyingPress, LiteSpeed Cache, Jetpack Boost, etc.) | — |
+| Lazy loading Twitter / Instagram embed helper scripts | Handle inside your theme, or use a full-featured performance plugin listed above | — |
+
 ## Description
 
 This plugin optimize page rendering of WordPress theme.
@@ -50,7 +71,7 @@ To optimize JavaScript loading, try and error approaches works fine.
 
 ### Case 3. Critical Stylesheet
 
-`rel="preload"` attributes makes your stylesheets loaded asynchrounsely, but FOUC(Flush of Unstyled Content) happens.
+<code>rel="preload"</code> attributes makes your stylesheets loaded asynchrounsely, but FOUC(Flush of Unstyled Content) happens.
 
 To avoid this, include critical CSS to **Deny List** in your setting screen. Critical CSS are generally your theme's main stylesheet.
 
